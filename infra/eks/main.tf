@@ -31,10 +31,12 @@ provider "kubernetes" {
 }
 
 locals {
-  name                   = "workflows"
-  environment            = "control-plane"
-  region                 = "us-east-2"
-  cluster_version        = "1.27"
+  name            = "workflows"
+  environment     = "control-plane"
+  region          = "us-east-2"
+  cluster_version = "1.27"
+
+  gitops_addons_org      = var.gitops_addons_org
   gitops_addons_url      = "${var.gitops_addons_org}/${var.gitops_addons_repo}"
   gitops_addons_basepath = var.gitops_addons_basepath
   gitops_addons_path     = var.gitops_addons_path
@@ -76,8 +78,8 @@ locals {
     enable_crossplane     = true # installs crossplane core
     enable_metrics_server = true
     #enable_argo_rollouts                         = true
-    enable_argo_events                            = true
-    enable_argo_workflows                         = true
+    enable_argo_events    = true
+    enable_argo_workflows = true
     #enable_cluster_proportional_autoscaler       = true
     #enable_gatekeeper                            = true
     #enable_gpu_operator                          = true
@@ -108,6 +110,11 @@ locals {
       addons_repo_basepath = local.gitops_addons_basepath
       addons_repo_path     = local.gitops_addons_path
       addons_repo_revision = local.gitops_addons_revision
+    },
+    {
+      workload_repo_url      = local.gitops_workload_url
+      workload_repo_path     = local.gitops_workload_path
+      workload_repo_revision = local.gitops_workload_revision
     }
   )
 
@@ -170,7 +177,7 @@ module "gitops_bridge_bootstrap" {
     metadata     = local.addons_metadata
     addons       = local.addons
   }
-  apps = local.argocd_apps
+  apps       = local.argocd_apps
   argocd     = { create_namespace = false }
   depends_on = [kubernetes_namespace.argocd, kubernetes_secret.git_secrets]
 }
