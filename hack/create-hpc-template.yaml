@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: create-hpc
+spec:
+  entrypoint: main
+  templates:
+  - name: main
+    script:
+      image: public.ecr.aws/parallelcluster/pcluster-api:3.7.1
+      command: [bash]
+      source: |
+        export HPC_CLUSTER_NAME=test-cluster
+        echo -e "$config" > config.yaml
+        cat config.yaml
+        pcluster version
+        pcluster create-cluster --cluster-configuration config.yaml --cluster-name $HPC_CLUSTER_NAME
+      envFrom:
+      - secretRef:
+          name: aws-creds
+      - configMapRef:
+          name: pcluster-config

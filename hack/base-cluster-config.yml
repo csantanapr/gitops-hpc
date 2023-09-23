@@ -1,0 +1,70 @@
+Region: us-east-2
+Image:
+  Os: ubuntu2004
+HeadNode:
+  InstanceType: c6a.large
+  Networking:
+    SubnetId: REPLACE_ME
+    ElasticIp: true
+  Ssh:
+    KeyName: REPLACE_ME
+  LocalStorage:
+    RootVolume:
+      Size: 50
+      Encrypted: FALSE
+  Iam:
+    S3Access:
+      - BucketName: REPLACE_ME_BUCKET123 # Use the same bucket everywhere you see REPLACE_ME_BUCKET123
+        EnableWriteAccess: false
+    AdditionalIamPolicies:
+      - Policy: arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      - Policy: arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+      - Policy: arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy
+Scheduling:
+  Scheduler: slurm
+  SlurmQueues:
+  - Name: hpc6a48xl
+    CapacityType: ONDEMAND
+    ComputeResources:
+    - Name: hpc6a48xl
+      InstanceType: hpc6a.48xlarge
+      MinCount: 0
+      MaxCount: 50
+      DisableSimultaneousMultithreading: true
+      Efa:
+        Enabled: true
+        GdrSupport: false
+    CustomActions:
+      OnNodeConfigured:
+        # postinit-compute-onconfig.sh contains useradd commands for compute nodes
+        Script: s3:/REPLACE_ME_BUCKET123/post-init/postinit-compute-onconfig.sh
+    Iam:
+      S3Access:
+        - BucketName: REPLACE_ME_BUCKET123
+          EnableWriteAccess: false
+      AdditionalIamPolicies:
+        - Policy: arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - Policy: arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        - Policy: arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy
+    Networking:
+      SubnetIds:
+       - REPLACE_ME
+      PlacementGroup:
+        Enabled: true
+SharedStorage:
+  - MountDir: shared
+    Name: shared
+    StorageType: Ebs
+    EbsSettings:
+      VolumeType: st1
+      Size: 500
+      Encrypted: FALSE
+      DeletionPolicy: Delete
+  - MountDir: efs 
+    Name: efs
+    StorageType: Efs
+    EfsSettings: # Use existing EFS 
+      FileSystemId: fs-0996f595efa57e0cf
+Tags:
+  - Key: Project
+    Value: project_name

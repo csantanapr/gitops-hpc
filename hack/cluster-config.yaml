@@ -1,0 +1,22 @@
+Region: us-east-2
+Image:
+  Os: ubuntu2004
+HeadNode:
+  InstanceType: t2.micro
+  Networking:
+    SubnetId: subnet-0b439e3159831d2dd
+  Ssh:
+    KeyName: hpc-carlos
+Scheduling:
+  Scheduler: slurm
+  SlurmQueues:
+  - Name: queue1
+    ComputeResources:
+    - Name: t2micro
+      Instances:
+      - InstanceType: t2.micro
+      MinCount: 0
+      MaxCount: 10
+    Networking:
+      SubnetIds:
+      - subnet-05f258192d3e81132
