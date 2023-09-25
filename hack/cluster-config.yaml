@@ -14,7 +14,7 @@ Scheduling:
     ComputeResources:
     - Name: t2micro
       Instances:
-      - InstanceType: t2.micro
+      - InstanceType: t3.small
       MinCount: 0
       MaxCount: 10
     Networking:

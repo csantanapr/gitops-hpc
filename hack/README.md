@@ -2,11 +2,25 @@
 
 ## Notes
 
+## Argo Workflows
+
+Setup
+```shell
+argo auth token
+kubectl -n argo-workflows port-forward deployment.apps/argo-workflows-server 2746:2746
+
+
+```
+
 Create AWS HCP Cluster using Argo Workflows
 
 ```shell
 kubectl create configmap pcluster-config \
   --from-file=config=cluster-config.yaml
+
+kubectl delete configmap pcluster-config
+
+kubectl get configmap pcluster-config -o yaml
 
 kubectl create secret generic aws-creds \
   --from-literal AWS_ACCESS_KEY_ID=REPLACEME \
@@ -14,9 +28,29 @@ kubectl create secret generic aws-creds \
   --from-literal AWS_DEFAULT_REGION=us-east-2
 
 kubectl apply -f create-hpc-template.yaml
+kubectl apply -f describe-hpc-template.yaml
+kubectl apply -f update-hpc-template.yaml
+kubectl apply -f update-hpc-compute-fleet-template.yaml
+
 argo template list
 argo submit --watch --from workflowtemplate/create-hpc
 
+argo submit --watch --from workflowtemplate/describe-hpc \
+  -p cluster="test-cluster"
+
+argo submit --watch --from workflowtemplate/update-compute-fleet-hpc \
+  -p cluster="test-cluster" \
+  -p status="STOP_REQUESTED"
+
+argo submit --watch --from workflowtemplate/update-hpc
+
+
+
+argo logs @latest
+
+kubectl apply -f describe-hpc-template.yaml
+argo template list
+argo submit --watch --from workflowtemplate/describe-hpc
 argo logs @latest
 ```
 
@@ -33,6 +67,7 @@ source hpc-ve/bin/activate
 
 ```shell
 pip3 install awscli
+pip3 install aws-parallelcluster@3.7.0
 ```
 
 Create HPC cluster
@@ -41,13 +76,19 @@ export AWS_DEFAULT_REGION="us-east-2"
 export HPC_CLUSTER_NAME="hcp-carlos"
 export HPC_CONFIG_FILE="cluster-config.yaml"
 
+# create vpc and cluster-config.yaml
 pcluster configure --config $HPC_CONFIG_FILE
 
 
 
 pcluster create-cluster --cluster-configuration $HPC_CONFIG_FILE --cluster-name $HPC_CLUSTER_NAME --region $AWS_DEFAULT_REGION
-```
 
+
+pcluster update-compute-fleet --cluster-name $HPC_CLUSTER_NAME --status STOPPED
+
+
+pcluster delete-cluster -n $HPC_CLUSTER_NAME --debug
+```
 
 ```json
 {
@@ -64,7 +105,7 @@ pcluster create-cluster --cluster-configuration $HPC_CONFIG_FILE --cluster-name 
   }
 }
 ```
-pcluster describe-cluster --cluster-name $HPC_CLUSTER_NAME --region $AWS_DEFAULT_REGION
+pcluster describe-cluster --cluster-name $HPC_CLUSTER_NAME
 ```json
 {
   "creationTime": "2023-09-22T16:13:06.037Z",
@@ -154,7 +195,7 @@ aws --region $AWS_DEFAULT_REGION cloudformation list-stacks \
 
 ```shell
 export HPC_SSH_KEY="$HOME/.ssh/hpc-carlos.pem"
-pcluster ssh -i $HPC_SSH_KEY --cluster-name $HPC_CLUSTER_NAME --region $AWS_DEFAULT_REGION
+pcluster ssh -i $HPC_SSH_KEY --cluster-name $HPC_CLUSTER_NAME
 ```
 
 
@@ -187,6 +228,7 @@ cat slurm-<job_id>.err
 ```shell
 srun --nodes=3 --ntasks-per-node=1 hostname
 ```
+
 
 get logs
 sudo cat /var/log/slurmctld.log
