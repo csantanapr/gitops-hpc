@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: hpc-event-source
+  namespace: argo-events
+spec:
+  template:
+    serviceAccountName: default # assign a service account with `get`, `list` and `watch` permissions on the resource being watched.
+  resource:
+    add:
+      # namespace to listen events within
+      namespace: hpc
+      # resource group
+      group: ''
+      # resource version
+      version: v1
+      # resource kind
+      resource: configmaps
+      # type of events
+      # possible values are ADD, DELETE, UPDATE
+      # Optional
+      eventTypes:
+        - ADD
+      # optional.
+      filter:
+        # This indicates only watch the events happened after the service start time.
+        afterStart: true
+    update:
+      # namespace to listen events within
+      namespace: hpc
+      # resource group
+      group: ''
+      # resource version
+      version: v1
+      # resource kind
+      resource: configmaps
+      # type of events
+      # possible values are ADD, DELETE, UPDATE
+      # Optional
+      eventTypes:
+        - UPDATE
+      # optional.
+      filter:
+        # This indicates only watch the events happened after the service start time.
+        afterStart: true
+    delete:
+      # namespace to listen events within
+      namespace: hpc
+      # resource group
+      group: ''
+      # resource version
+      version: v1
+      # resource kind
+      resource: configmaps
+      # type of events
+      # possible values are ADD, DELETE, UPDATE
+      # Optional
+      eventTypes:
+        - DELETE
+      # optional.
+      filter:
+        # This indicates only watch the events happened after the service start time.
+        afterStart: true

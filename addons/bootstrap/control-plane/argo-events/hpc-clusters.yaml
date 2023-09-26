@@ -1,0 +1,37 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: hpc-applicationset
+spec:
+  generators:
+    - clusters:
+        selector:
+          matchExpressions:
+            - key: akuity.io/argo-cd-cluster-name
+              operator: NotIn
+              values: [in-cluster]
+  template:
+    metadata:
+      name: hpc-clusters
+    spec:
+      project: default
+      source:
+        repoURL: '{{metadata.annotations.addons_repo_url}}'
+        targetRevision: '{{metadata.annotations.addons_repo_revision}}'
+        path: 'gitops'
+        directory:
+          recurse: true
+          exclude: exclude/*
+      destination:
+        name: '{{name}}'
+        namespace: 'argo-events'
+      syncPolicy:
+        retry:
+          backoff:
+            duration: 2m
+            factor: 2
+            maxDuration: 60m
+          limit: 100
+        automated:
+          allowEmpty: true
