@@ -25,7 +25,7 @@ spec:
           exclude: addons/*
       destination:
         name: '{{name}}'
-        namespace: '*'
+        namespace: 'default'
       syncPolicy:
         retry:
           backoff:
