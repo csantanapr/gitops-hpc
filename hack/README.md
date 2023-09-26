@@ -60,7 +60,7 @@ argo logs @latest
 ```shell
 
 k create ns hpc
-k create cm -n hpc hpc-my-cluster --from-literal=cluster=my-cluster --from-file=config=../cluster-config.yaml
+k create cm -n hpc hpc-my-cluster-3 --from-literal=cluster=my-cluster-3 --from-file=config=../cluster-config.yaml
 k delete cm -n hpc hpc-my-cluster
 ```
 
