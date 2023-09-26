@@ -22,7 +22,7 @@ spec:
         path: '{{metadata.annotations.addons_repo_basepath}}charts/addons/argo-events/resources'
         directory:
           recurse: true
-          exclude: addons/*
+          exclude: exclude/*
       destination:
         name: '{{name}}'
         namespace: 'argo-events'
