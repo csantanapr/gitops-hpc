@@ -5,22 +5,24 @@ metadata:
   namespace: argo-events
 spec:
   template:
-    serviceAccountName: your-service-account # assign a service account with `get`, `list` and `watch` permissions on the resource being watched.
+    serviceAccountName: default # assign a service account with `get`, `list` and `watch` permissions on the resource being watched.
   resource:
     example:
       # namespace to listen events within
-      namespace: argo-events
+      namespace: default
       # resource group
-      group: argoproj.io
+      group: ''
       # resource version
-      version: v1alpha1
+      version: v1
       # resource kind
-      resource: workflows
+      resource: configmaps
       # type of events
       # possible values are ADD, DELETE, UPDATE
       # Optional
       eventTypes:
         - ADD
+        - UPDATE
+        - DELETE
       # optional.
       filter:
         # This indicates only watch the events happened after the service start time.
@@ -29,14 +31,14 @@ spec:
         # Please read https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#api for more details.
 
         # labels provide listing options to K8s API to watch objects
-        labels:
-          - key: app
-            # Supported operations like ==, !=, etc.
-            # Defaults to ==.
-            # Refer https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors for more info.
-            # optional.
-            operation: "=="
-            value: my-workflow
+        # labels:
+        #   - key: app
+        #     # Supported operations like ==, !=, etc.
+        #     # Defaults to ==.
+        #     # Refer https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors for more info.
+        #     # optional.
+        #     operation: "=="
+        #     value: my-workflow
 
 #        # fields provide listing options to K8s API to watch objects
 #        fields:
