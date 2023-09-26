@@ -13,7 +13,7 @@ spec:
               values: [in-cluster]
   template:
     metadata:
-      name: cluster-{{name}}
+      name: argo-events-{{name}}
     spec:
       project: default
       source:
