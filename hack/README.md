@@ -32,8 +32,16 @@ kubectl apply -f describe-hpc-template.yaml
 kubectl apply -f update-hpc-template.yaml
 kubectl apply -f update-hpc-compute-fleet-template.yaml
 
+k apply -f argo-workflows/
 argo template list
-argo submit --watch --from workflowtemplate/create-hpc
+argo submit --watch --from workflowtemplate/pcluster-create-cluster \
+  -p cluster="test-cluster" \
+  -p cluster_version="3.7.1" \
+  -p config="test-config"
+
+argo submit --watch --from workflowtemplate/pcluster-list-clusters \
+  -p cluster_version="3.7.1"
+
 
 argo submit --watch --from workflowtemplate/describe-hpc \
   -p cluster="test-cluster"

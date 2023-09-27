@@ -5,6 +5,7 @@ metadata:
   namespace: hpc
 data:
   cluster: my-cluster-2
+  cluster_version: "3.7.1"
   config: |
     Region: us-east-2
     Image:
