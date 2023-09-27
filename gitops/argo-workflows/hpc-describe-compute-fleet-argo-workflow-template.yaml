@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: pcluster-describe-compute-fleet
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+    - name: cluster_version
+      default: "3.7.1"
+    - name: cluster
+  templates:
+  - name: main
+    script:
+      image: public.ecr.aws/parallelcluster/pcluster-api:{{workflow.parameters.cluster_version}}
+      command: [bash]
+      source: |
+        export HPC_CLUSTER_NAME="{{workflow.parameters.cluster}}"
+        echo "HPC_CLUSTER_NAME=$HPC_CLUSTER_NAME"
+        pcluster version
+        #env
+        pcluster describe-compute-fleet --cluster-name $HPC_CLUSTER_NAME
+      envFrom:
+      - secretRef:
+          name: aws-creds

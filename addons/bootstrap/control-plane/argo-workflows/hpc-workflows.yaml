@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: hpc-applicationset
+  name: hpc-workflows-templates
 spec:
   generators:
     - clusters:
@@ -13,13 +13,13 @@ spec:
               values: [in-cluster]
   template:
     metadata:
-      name: hpc-clusters
+      name: hpc-workflows-templates
     spec:
       project: default
       source:
         repoURL: '{{metadata.annotations.addons_repo_url}}'
         targetRevision: '{{metadata.annotations.addons_repo_revision}}'
-        path: 'gitops/hpc-clusters'
+        path: 'gitops/argo-workflows'
         directory:
           recurse: true
           exclude: exclude/*

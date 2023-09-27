@@ -37,22 +37,32 @@ argo template list
 argo submit --watch --from workflowtemplate/pcluster-create-cluster \
   -p cluster="test-cluster" \
   -p cluster_version="3.7.1" \
-  -p config="test-config"
+  -p config="$(cat cluster-config.yaml)"
 
 argo submit --watch --from workflowtemplate/pcluster-list-clusters \
   -p cluster_version="3.7.1"
 
-
-argo submit --watch --from workflowtemplate/describe-hpc \
-  -p cluster="test-cluster"
-
-argo submit --watch --from workflowtemplate/update-compute-fleet-hpc \
+argo submit --watch --from workflowtemplate/pcluster-delete-cluster \
   -p cluster="test-cluster" \
+  -p cluster_version="3.7.1"
+
+argo submit --watch --from workflowtemplate/pcluster-describe-cluster \
+  -p cluster="test-cluster" \
+  -p cluster_version="3.7.1"
+
+argo submit --watch --from workflowtemplate/pcluster-update-compute-fleet \
+  -p cluster="test-cluster" \
+  -p cluster_version="3.7.1" \
   -p status="STOP_REQUESTED"
 
-argo submit --watch --from workflowtemplate/update-hpc
+argo submit --watch --from workflowtemplate/pcluster-update-cluster \
+  -p cluster="test-cluster" \
+  -p cluster_version="3.7.1" \
+  -p config="$(cat cluster-config.yaml)"
 
-
+argo submit --watch --from workflowtemplate/pcluster-describe-compute-fleet \
+  -p cluster="test-cluster" \
+  -p cluster_version="3.7.1"
 
 argo logs @latest
 

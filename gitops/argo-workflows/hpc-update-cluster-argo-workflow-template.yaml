@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: pcluster-update-cluster
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+    - name: cluster_version
+      default: "3.7.1"
+    - name: cluster
+    - name: config
+  templates:
+  - name: main
+    script:
+      image: public.ecr.aws/parallelcluster/pcluster-api:{{workflow.parameters.cluster_version}}
+      command: [bash]
+      source: |
+        export HPC_CLUSTER_NAME="{{workflow.parameters.cluster}}"
+        echo "HPC_CLUSTER_NAME=$HPC_CLUSTER_NAME"
+        echo -e "{{workflow.parameters.config}}" > config.yaml
+        cat config.yaml
+        pcluster version
+        #env
+        pcluster update-cluster --cluster-configuration config.yaml --cluster-name $HPC_CLUSTER_NAME
+      envFrom:
+      - secretRef:
+          name: aws-creds

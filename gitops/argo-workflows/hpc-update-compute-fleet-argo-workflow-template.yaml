@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: pcluster-create-cluster
+  name: pcluster-update-compute-fleet
 spec:
   entrypoint: main
   arguments:
@@ -9,7 +9,8 @@ spec:
     - name: cluster_version
       default: "3.7.1"
     - name: cluster
-    - name: config
+    #{START_REQUESTED,STOP_REQUESTED,ENABLED,DISABLED}
+    - name: status
   templates:
   - name: main
     script:
@@ -18,11 +19,11 @@ spec:
       source: |
         export HPC_CLUSTER_NAME="{{workflow.parameters.cluster}}"
         echo "HPC_CLUSTER_NAME=$HPC_CLUSTER_NAME"
-        echo -e "{{workflow.parameters.config}}" > config.yaml
-        cat config.yaml
+        export HPC_STATUS="{{workflow.parameters.status}}"
+        echo "HPC_STATUS=$HPC_STATUS"
         pcluster version
         #env
-        #pcluster create-cluster --cluster-configuration config.yaml --cluster-name $HPC_CLUSTER_NAME
+        pcluster update-compute-fleet --status $HPC_STATUS --cluster-name $HPC_CLUSTER_NAME
       envFrom:
       - secretRef:
           name: aws-creds
