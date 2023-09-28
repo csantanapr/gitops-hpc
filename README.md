@@ -10,9 +10,12 @@ Working with Argo Workflows
 
 ```shell
 # Terminal logs
-stern -n default pcluster
+stern -n A pcluster
 
-# Terminal
+argo submit --watch --from clusterworkflowtemplate/pcluster-list-clusters
+
+argo submit --watch --from clusterworkflowtemplate/pcluster-describe-cluster \
+-p cluster_name=my-cluster
 
 
 ```
