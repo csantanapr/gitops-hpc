@@ -6,11 +6,16 @@ Deploy [AWS ParallelCluster](https://aws.amazon.com/hpc/parallelcluster/) using 
 
 
 
-Working with Argo Workflows
+Run Argo Workflows
 
 ```shell
 # Terminal logs
 stern -n A pcluster
+
+argo submit --watch --from \
+clusterworkflowtemplate/pcluster-create-cluster \
+-p cluster_name="my-cluster" \
+-p cluster_config="$(cat examples/cluster-config.yaml)"
 
 argo submit --watch --from \
 clusterworkflowtemplate/pcluster-list-clusters
@@ -29,11 +34,18 @@ clusterworkflowtemplate/pcluster-update-compute-fleet \
 -p status=STOP_REQUESTED
 
 argo submit --watch --from \
+clusterworkflowtemplate/pcluster-update-cluster \
+-p cluster_name="my-cluster" \
+-p cluster_config="$(cat examples/cluster-config-updated.yaml)"
+
+argo submit --watch --from \
 clusterworkflowtemplate/pcluster-update-compute-fleet \
 -p cluster_name=test-cluster \
 -p status=START_REQUESTED
 
-
+argo submit --watch --from \
+clusterworkflowtemplate/pcluster-delete-cluster \
+-p cluster_name=my-cluster
 
 ```
 

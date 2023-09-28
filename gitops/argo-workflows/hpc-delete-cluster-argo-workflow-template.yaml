@@ -4,22 +4,26 @@ metadata:
   name: pcluster-delete-cluster
 spec:
   entrypoint: main
-  arguments:
-    parameters:
-    - name: cluster_version
-      default: "3.7.1"
-    - name: cluster
   templates:
   - name: main
+    inputs:
+      parameters:
+      - name: cluster_name
+      - name: cluster_version
+        default: "3.7.1"
+      - name: region
+        default: "us-east-2"
+      - name: options
+        default: ""
     script:
-      image: public.ecr.aws/parallelcluster/pcluster-api:{{workflow.parameters.cluster_version}}
+      image: public.ecr.aws/parallelcluster/pcluster-api:{{inputs.parameters.cluster_version}}
       command: [bash]
       source: |
-        export HPC_CLUSTER_NAME="{{workflow.parameters.cluster}}"
-        echo "HPC_CLUSTER_NAME=$HPC_CLUSTER_NAME"
-        pcluster version
+        #pcluster version
         #env
-        pcluster delete-cluster --cluster-name $HPC_CLUSTER_NAME
+        pcluster delete-cluster \
+        --cluster-name "{{inputs.parameters.cluster_name}}" \
+        --region {{inputs.parameters.region}} {{inputs.parameters.options}}
       envFrom:
       - secretRef:
           name: aws-creds
