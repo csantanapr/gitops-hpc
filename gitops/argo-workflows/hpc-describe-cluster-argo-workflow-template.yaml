@@ -21,7 +21,8 @@ spec:
       source: |
         #pcluster version
         #env
-        pcluster describe-cluster --cluster-name "{{inputs.parameters.cluster_name}}" \
+        pcluster describe-cluster \
+        --cluster-name "{{inputs.parameters.cluster_name}}" \
         --region {{inputs.parameters.region}} {{inputs.parameters.options}}
       envFrom:
       - secretRef:

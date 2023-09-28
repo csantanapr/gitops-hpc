@@ -12,13 +12,27 @@ Working with Argo Workflows
 # Terminal logs
 stern -n A pcluster
 
-argo submit --watch --from clusterworkflowtemplate/pcluster-list-clusters
+argo submit --watch --from \
+clusterworkflowtemplate/pcluster-list-clusters
 
-argo submit --watch --from clusterworkflowtemplate/pcluster-describe-cluster \
+argo submit --watch --from \
+clusterworkflowtemplate/pcluster-describe-cluster \
 -p cluster_name=my-cluster
 
-argo submit --watch --from clusterworkflowtemplate/pcluster-describe-compute-fleet \
+argo submit --watch --from \
+clusterworkflowtemplate/pcluster-describe-compute-fleet \
 -p cluster_name=my-cluster
+
+argo submit --watch --from \
+clusterworkflowtemplate/pcluster-update-compute-fleet \
+-p cluster_name=my-cluster \
+-p status=STOP_REQUESTED
+
+argo submit --watch --from \
+clusterworkflowtemplate/pcluster-update-compute-fleet \
+-p cluster_name=test-cluster \
+-p status=START_REQUESTED
+
 
 
 ```

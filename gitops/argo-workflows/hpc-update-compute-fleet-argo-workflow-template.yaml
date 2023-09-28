@@ -4,26 +4,33 @@ metadata:
   name: pcluster-update-compute-fleet
 spec:
   entrypoint: main
-  arguments:
-    parameters:
-    - name: cluster_version
-      default: "3.7.1"
-    - name: cluster
-    #{START_REQUESTED,STOP_REQUESTED,ENABLED,DISABLED}
-    - name: status
   templates:
   - name: main
+    inputs:
+      parameters:
+      - name: cluster_name
+      - name: status
+        enum:
+        - START_REQUESTED #compute fleet status can only be set to `START_REQUESTED` or `STOP_REQUESTED` for Slurm scheduler clusters.
+        - STOP_REQUESTED
+        - ENABLED
+        - DISABLED
+      - name: cluster_version
+        default: "3.7.1"
+      - name: region
+        default: "us-east-2"
+      - name: options
+        default: ""
     script:
-      image: public.ecr.aws/parallelcluster/pcluster-api:{{workflow.parameters.cluster_version}}
+      image: public.ecr.aws/parallelcluster/pcluster-api:{{inputs.parameters.cluster_version}}
       command: [bash]
       source: |
-        export HPC_CLUSTER_NAME="{{workflow.parameters.cluster}}"
-        echo "HPC_CLUSTER_NAME=$HPC_CLUSTER_NAME"
-        export HPC_STATUS="{{workflow.parameters.status}}"
-        echo "HPC_STATUS=$HPC_STATUS"
-        pcluster version
+        #pcluster version
         #env
-        pcluster update-compute-fleet --status $HPC_STATUS --cluster-name $HPC_CLUSTER_NAME
+        pcluster update-compute-fleet \
+        --cluster-name "{{inputs.parameters.cluster_name}}" \
+        --status {{inputs.parameters.status}} \
+        --region {{inputs.parameters.region}} {{inputs.parameters.options}}
       envFrom:
       - secretRef:
           name: aws-creds
