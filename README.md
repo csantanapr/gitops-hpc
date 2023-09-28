@@ -1,6 +1,21 @@
-# gitops-hpc
+# GitOps for HPC
+
+Deploy [AWS ParallelCluster](https://aws.amazon.com/hpc/parallelcluster/) using GitOps on [Amazon EKS](https://aws.amazon.com/eks/)
 
 
+
+
+
+Working with Argo Workflows
+
+```shell
+# Terminal logs
+stern -n default pcluster
+
+# Terminal
+
+
+```
 
 
 

@@ -1,22 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
-kind: WorkflowTemplate
+kind: ClusterWorkflowTemplate
 metadata:
   name: pcluster-list-clusters
 spec:
   entrypoint: main
-  arguments:
-    parameters:
-    - name: cluster_version
-      default: "3.7.1"
   templates:
   - name: main
+    inputs:
+      parameters:
+      - name: cluster_version
+        default: "3.7.1"
+      - name: region
+        default: "us-east-2"
+      - name: options
+        default: ""
     script:
-      image: public.ecr.aws/parallelcluster/pcluster-api:{{workflow.parameters.cluster_version}}
+      image: public.ecr.aws/parallelcluster/pcluster-api:{{inputs.parameters.cluster_version}}
       command: [bash]
       source: |
-        pcluster version
+        #pcluster version
         #env
-        pcluster list-clusters
+        pcluster list-clusters \
+        --region {{inputs.parameters.region}} {{inputs.parameters.options}}
       envFrom:
       - secretRef:
           name: aws-creds
