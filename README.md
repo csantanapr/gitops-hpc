@@ -1,21 +1,11 @@
-# GitOps for HPC
+# Deploy AWS HPC Parallel Clusters usign Amazon EKS and GitOps
 
 Deploy [AWS ParallelCluster](https://aws.amazon.com/hpc/parallelcluster/) using GitOps on [Amazon EKS](https://aws.amazon.com/eks/)
 
-
-Configure AWS Credentials
-```shell
-kubectl create secret generic aws-creds -n default --from-literal=AWS_ACCESS_KEY_ID=xyz --from-literal=AWS_SECRET_ACCESS_KEY=xyz
-```
-> Workflows run in `default` namespace, you can update the argo event sensors
-
-
-The three main component to deploy HPC Clusters are:
-1. Argo Events using a EventSource, this watches for confimap events (ADD, UPDATE, DELETE), any configmap with the label `app=pcluster` in any namspace
-2. Argo Workflows get triggered by Argo Sensor for each event
-3. Create ConfigMap with HPC Parallel Cluster specification
-
-
+The main components to deploy HPC Clusters using Amazon EKS:
+1. [Argo Events](https://argoproj.github.io/argo-events/) using a EventSource, this watches for confimap events (ADD, UPDATE, DELETE), any configmap with the label `app=pcluster` in any namespace
+2. [Argo Workflows](https://argoproj.github.io/argo-workflows/) get triggered by Argo Sensor for each event
+3. [Argo CD](https://argo-cd.readthedocs.io/en/stable/) deploy ConfigMap with HPC Parallel Cluster specification
 
 Deploy manually or automatically using GitOps(ArgoCD) using the AWS EKS Blueprints GitOps Bridge [infra/eks](./infra/eks):
 ```shell
@@ -24,7 +14,7 @@ kubectl apply gitops/argo-events/
 kubectl apply gitops/hpc-clusters/
 ```
 
-Working with Argo Workflows
+Try the Argo Workflows
 ```shell
 # Terminal logs
 stern -n A pcluster
@@ -105,6 +95,12 @@ data:
           - subnet-05f258192d3e81132
 EOF
 ```
+
+Configure AWS Credentials
+```shell
+kubectl create secret generic aws-creds -n default --from-literal=AWS_ACCESS_KEY_ID=xyz --from-literal=AWS_SECRET_ACCESS_KEY=xyz
+```
+> Workflows run in `default` namespace, you can update the argo event sensors
 
 
 
