@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: pcluster-update
+  namespace: argo-events
+spec:
+  template:
+    serviceAccountName: default
+  dependencies:
+    - name: hpc-dep
+      eventSourceName: pcluster-event-source
+      eventName: update
+  triggers:
+    - template:
+        name: argo-workflow
+        k8s:
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                namespace: default
+                generateName: pcluster-update-
+                labels:
+                  app: pcluster-workflow
+              spec:
+                entrypoint: main
+                arguments:
+                  parameters:
+                  - name: cluster_name
+                  - name: cluster_config
+                  - name: cluster_version
+                  - name: region
+                workflowTemplateRef:
+                  name: pcluster-update-cluster
+                  clusterScope: true
+          parameters:
+            - src:
+                dependencyName: hpc-dep
+                dataTemplate: "{{ .Input.body.data.cluster_name }}"
+              dest: spec.arguments.parameters.0.value
+            - src:
+                dependencyName: hpc-dep
+                dataTemplate: "{{ .Input.body.data.cluster_config }}"
+              dest: spec.arguments.parameters.1.value
+            - src:
+                dependencyName: hpc-dep
+                dataTemplate: "{{ .Input.body.data.cluster_version }}"
+              dest: spec.arguments.parameters.2.value
+            - src:
+                dependencyName: hpc-dep
+                dataTemplate: "{{ .Input.body.data.region }}"
+              dest: spec.arguments.parameters.3.value
+      retryStrategy:
+        steps: 3

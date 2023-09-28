@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: EventSource
 metadata:
-  name: hpc-event-source
+  name: pcluster-event-source
   namespace: argo-events
 spec:
   template:
@@ -9,7 +9,7 @@ spec:
   resource:
     add:
       # namespace to listen events within
-      namespace: hpc
+      #namespace: hpc
       # resource group
       group: ''
       # resource version
@@ -25,9 +25,18 @@ spec:
       filter:
         # This indicates only watch the events happened after the service start time.
         afterStart: true
+        # labels provide listing options to K8s API to watch objects
+        labels:
+          - key: app
+            # Supported operations like ==, !=, etc.
+            # Defaults to ==.
+            # Refer https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors for more info.
+            # optional.
+            operation: "=="
+            value: pcluster
     update:
       # namespace to listen events within
-      namespace: hpc
+      #namespace: hpc
       # resource group
       group: ''
       # resource version
@@ -43,9 +52,18 @@ spec:
       filter:
         # This indicates only watch the events happened after the service start time.
         afterStart: true
+        # labels provide listing options to K8s API to watch objects
+        labels:
+          - key: app
+            # Supported operations like ==, !=, etc.
+            # Defaults to ==.
+            # Refer https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors for more info.
+            # optional.
+            operation: "=="
+            value: pcluster
     delete:
       # namespace to listen events within
-      namespace: hpc
+      #namespace: hpc
       # resource group
       group: ''
       # resource version
@@ -61,3 +79,12 @@ spec:
       filter:
         # This indicates only watch the events happened after the service start time.
         afterStart: true
+        # labels provide listing options to K8s API to watch objects
+        labels:
+          - key: app
+            # Supported operations like ==, !=, etc.
+            # Defaults to ==.
+            # Refer https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors for more info.
+            # optional.
+            operation: "=="
+            value: pcluster

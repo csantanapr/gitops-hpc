@@ -48,7 +48,7 @@ clusterworkflowtemplate/pcluster-update-compute-fleet \
 
 argo submit --watch --from \
 clusterworkflowtemplate/pcluster-delete-cluster \
--p cluster_name=my-cluster
+-p cluster_name=my-cluster-1
 
 ```
 

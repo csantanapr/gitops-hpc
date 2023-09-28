@@ -1,12 +1,15 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: hpc-my-cluster-4
+  name: hpc-my-cluster-2
   namespace: hpc
+  labels:
+    app: pcluster
 data:
-  cluster: my-cluster-4
+  cluster_name: hpc-my-cluster-2
   cluster_version: "3.7.1"
-  config: |
+  region: us-east-2
+  cluster_config: |
     Region: us-east-2
     Image:
       Os: ubuntu2004
