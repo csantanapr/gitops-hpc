@@ -17,6 +17,9 @@ argo submit --watch --from clusterworkflowtemplate/pcluster-list-clusters
 argo submit --watch --from clusterworkflowtemplate/pcluster-describe-cluster \
 -p cluster_name=my-cluster
 
+argo submit --watch --from clusterworkflowtemplate/pcluster-describe-compute-fleet \
+-p cluster_name=my-cluster
+
 
 ```
 
