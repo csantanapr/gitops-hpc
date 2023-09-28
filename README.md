@@ -4,7 +4,10 @@ Deploy [AWS ParallelCluster](https://aws.amazon.com/hpc/parallelcluster/) using 
 
 
 
-
+Configure AWS Credentials
+```shell
+kubectl create secret generic aws-creds --from-literal=AWS_ACCESS_KEY_ID=xyz --from-literal=AWS_SECRET_ACCESS_KEY=xyz
+```
 
 Run Argo Workflows
 
