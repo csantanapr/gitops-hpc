@@ -3,14 +3,28 @@
 Deploy [AWS ParallelCluster](https://aws.amazon.com/hpc/parallelcluster/) using GitOps on [Amazon EKS](https://aws.amazon.com/eks/)
 
 
-
 Configure AWS Credentials
 ```shell
-kubectl create secret generic aws-creds --from-literal=AWS_ACCESS_KEY_ID=xyz --from-literal=AWS_SECRET_ACCESS_KEY=xyz
+kubectl create secret generic aws-creds -n default --from-literal=AWS_ACCESS_KEY_ID=xyz --from-literal=AWS_SECRET_ACCESS_KEY=xyz
+```
+> Workflows run in `default` namespace, you can update the argo event sensors
+
+
+The three main component to deploy HPC Clusters are:
+1. Argo Events using a EventSource, this watches for confimap events (ADD, UPDATE, DELETE), any configmap with the label `app=pcluster` in any namspace
+2. Argo Workflows get triggered by Argo Sensor for each event
+3. Create ConfigMap with HPC Parallel Cluster specification
+
+
+
+Deploy manually or automatically using GitOps(ArgoCD) using the AWS EKS Blueprints GitOps Bridge [infra/eks](./infra/eks):
+```shell
+kubectl apply gitops/argo-workflows/
+kubectl apply gitops/argo-events/
+kubectl apply gitops/hpc-clusters/
 ```
 
-Run Argo Workflows
-
+Working with Argo Workflows
 ```shell
 # Terminal logs
 stern -n A pcluster
@@ -52,6 +66,45 @@ clusterworkflowtemplate/pcluster-delete-cluster \
 
 ```
 
+Create HPC Parallel Cluster by creating configmap
+```shell
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hpc-my-cluster-test
+  namespace: hpc
+  labels:
+    app: pcluster
+data:
+  cluster_name: hpc-my-cluster-test
+  cluster_version: "3.7.1"
+  region: us-east-2
+  cluster_config: |
+    Region: us-east-2
+    Image:
+      Os: ubuntu2004
+    HeadNode:
+      InstanceType: t2.micro
+      Networking:
+        SubnetId: subnet-0b439e3159831d2dd
+      Ssh:
+        KeyName: hpc-carlos
+    Scheduling:
+      Scheduler: slurm
+      SlurmQueues:
+      - Name: queue1
+        ComputeResources:
+        - Name: t2micro
+          Instances:
+          - InstanceType: t3.small
+          MinCount: 0
+          MaxCount: 10
+        Networking:
+          SubnetIds:
+          - subnet-05f258192d3e81132
+EOF
+```
 
 
 
