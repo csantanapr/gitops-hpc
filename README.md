@@ -1,6 +1,6 @@
 # Deploy AWS HPC Parallel Clusters usign Amazon EKS and GitOps
 
-Deploy [AWS ParallelCluster](https://aws.amazon.com/hpc/parallelcluster/) using GitOps on [Amazon EKS](https://aws.amazon.com/eks/)
+Deploy [AWS ParallelCluster](https://aws.amazon.com/hpc/parallelcluster/) using [Amazon EKS](https://aws.amazon.com/eks/) and GitOps
 
 The main components to deploy HPC Clusters using Amazon EKS:
 1. [Argo Events](https://argoproj.github.io/argo-events/) using a EventSource, this watches for confimap events (ADD, UPDATE, DELETE), any configmap with the label `app=pcluster` in any namespace
